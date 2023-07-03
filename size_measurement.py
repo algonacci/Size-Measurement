@@ -11,28 +11,28 @@ model.to(device).eval()
 def detect_people(image):
     img = Image.fromarray(image)
     img = img.convert('RGB')
-    img = img.resize((640, 640))
+    # img = img.resize((640, 640))
     results = model(img)
     detections = results.xyxy[0]
     detections = detections[detections[:, 5] == 0]  # Filter only people (class index 0)
     return detections
 
 
-average_pixel_height = 150
+average_pixel_height = (150 + 160 + 170) / 3
 
 
 def calculate_size(pixel_size, focal_length):
     return (pixel_size * focal_length) / average_pixel_height
 
 
-image = cv2.imread('100.jpg')
+image = cv2.imread('baby1.jpg')
 
 detections = detect_people(image)
 
 for detection in detections:
     xmin, ymin, xmax, ymax, _, confidence = detection[:6]
     pixel_height = ymax - ymin
-    focal_length = 100  # Replace with your focal length in millimeters
+    focal_length = 30  # Replace with your focal length in millimeters
     centimeter_height = calculate_size(pixel_height, focal_length)
 
     cv2.rectangle(image, (int(xmin), int(ymin)), (int(xmax), int(ymax)), (0, 255, 0), 2)
